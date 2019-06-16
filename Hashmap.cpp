@@ -3,26 +3,34 @@
 
 using namespace std;
 
-//eventually put copy, destructor, and assignment
-
 Hashmap::Hashmap(){
-    Hashmap::generateKey(10);
+    Hashmap::generateKey(32);
 }
 Hashmap::Hashmap(int cap){
-    Hashmap::generateKey(10);
+    Hashmap::generateKey(32);
     _capac = cap;
     _data[cap] = {NULL};
 }
+/* destructor */
+/* Hashmap::~Hashmap(){ */
+/* 	cout << "ok" << endl; */
+/* 	delete[] _data; */
+/* } */
+/* TODO: put copy, and assignment */
 
-//public methods
-void Hashmap::insert(string k, string d){ 
-    
-    int loc = hashFunction(k);
+/* 
+ * PUBLIC METHODS 
+ */
+
+/* Insert will insert a key value string into a hashmap if the key does not
+ * already exist */
+void Hashmap::Insert(string k, string v){ 
     
     node* inNode = new node();
     inNode->key = k;
-    inNode->data = d;
+    inNode->data = v;
     
+    int loc = hashFunction(k);
     node* hashNode = _data[loc];
     
     if(hashNode == NULL){
@@ -43,16 +51,20 @@ void Hashmap::insert(string k, string d){
     hashNode->next = inNode;
     
 }
-void Hashmap::emplace(string k, string d){
+
+/* Emplace will attempt to create or overwrite a given key value pair */
+void Hashmap::Emplace(string k, string v){
     
 }
-void Hashmap::erase(string k){
-    
+
+/* Erase will remove the node with a given key from the hashmap */
+void Hashmap::Erase(string k){
+
 }
-string Hashmap::at(std::string k){//maybe a find method that returns pointer would be more effective
-    
+
+/* At returns the data for a given key otherwise it will return null and throw an error */
+std::string Hashmap::At(std::string k){
     int loc = hashFunction(k);
-    
     node* hashNode = _data[loc];
     
     while(hashNode != NULL){
@@ -62,8 +74,22 @@ string Hashmap::at(std::string k){//maybe a find method that returns pointer wou
     }
     std::cerr << "Out of Range error: " << endl;
     return NULL;
-    
 }
+int Hashmap::GetBucketCount(){
+    return sizeof(_data);
+}
+int Hashmap::GetCapacity(){
+    return _capac;
+}
+int Hashmap::GetElementCount(){
+    return _elements;
+}
+/*
+ * PRIVATE METHODS
+ */
+
+/* find returns pointer to the node of a given key otherwise find returns 
+ * pointer.end() */
 node* Hashmap::find(string key){
     int loc = hashFunction(key);
     node* hashNode = _data[loc];
@@ -71,15 +97,6 @@ node* Hashmap::find(string key){
         hashNode = hashNode->next;
     }
     return hashNode;
-}
-int Hashmap::getBucketCount(){
-    return sizeof(_data);
-}
-int Hashmap::getCapacity(){
-    return _capac;
-}
-int Hashmap::getElementCount(){
-    return _elements;
 }
 string Hashmap::getPublicKey(){
     return _key;

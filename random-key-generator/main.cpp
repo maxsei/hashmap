@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include <string>
 #include <cstdlib>
 #include <math.h>
@@ -25,22 +26,21 @@ string publicKey;
 
 string generateKey(int minLen, int maxLen);
 string generateKey(int len);
-int hashFunction(string masterKey, string key, int hashSize);
-void readData();
+int hashFunction(string masterKey, string key, int n);
+void readData(std::string text);
 void simulate();
 void generateTestData();
 
 int main(){
     
     /*
-        THIS PROGRAM DOES A FEW THINGS
-            - produces a list of unique keys or not
-            - offers statistics on hashing 
+        THIS PROGRAM WILL:
+            - produce a list of unique keys
+            - offer summary statistics on hashing 
     */
-
     
-    readData();
-    //simulate();
+    readData("gibbon.txt");
+    simulate();
     generateTestData();
 
 }
@@ -49,20 +49,17 @@ void simulate(){
     
     srand(time(NULL));
     
-    double avgcol = 0;
-    double avgstd = 0;
+    double collisionMean = 0;
+    double collisionStd = 0;
     for(int k = 0; k < simulations; k++){
         
         
         int collisions = 0;
-        int hashCollisionArray[hashSize] = {0}; //resets values to 0
+        int hashCollisionArray[hashSize] = {0};
         publicKey = generateKey(maxKeyLength);
-        //cout << "generating " << numberOfKeys 
-        //<< " keys with public key " << publicKey << endl;
         
         ofstream fout;
         fout.open("keys.txt");
-
         
         for(int i = 0; i < numberOfKeys; i++){
             string key = generateKey(minKeyLength, maxKeyLength);
@@ -76,28 +73,23 @@ void simulate(){
     
         fout.close();
         
-        //how good was our hashing algorithm?
+        /* how good was our hashing algorithm? */
         double sum = 0;
-        //cout << "[";
         for(int i : hashCollisionArray){
             if(i > 1){
                 collisions += i - 1;
             }
             sum += pow(i - numberOfKeys/hashSize ,2);
-            //cout << i << ", ";
         }
-        avgstd += sqrt(sum / (numberOfKeys - 1));
-        avgcol += collisions;
-        //cout << "] \t" ;
-        //cout << "standard deviation of " << sqrt(sum / (numberOfKeys - 1)) << endl;
-        //cout << "had " << collisions << " collisions" << endl;
+        collisionStd += sqrt(sum / (numberOfKeys - 1));
+        collisionMean += collisions;
     }
     
-    avgstd /= simulations;
-    avgcol /= simulations;
+    collisionStd /= simulations;
+    collisionMean /= simulations;
     
-    cout << "average standard deviation is " << avgstd << endl;
-    cout << "average number of collisions is " << avgcol << endl;
+    cout << "standard deviation per simulation: " << collisionStd << endl;
+    cout << "mean number of collisions per simulation:  " << collisionMean << endl;
 }
 
 void generateTestData(){
@@ -120,6 +112,8 @@ void generateTestData(){
     fout.close();
 }
 
+/* generateKey will generate a random string of characters of random length that
+varies between the two specified bounds */ 
 string generateKey(int minLen, int maxLen){
     keyLength = rand() % (maxLen - minLen) + minLen;
     string key = "";
@@ -128,6 +122,8 @@ string generateKey(int minLen, int maxLen){
     }
     return key;
 }
+
+/* generateKey will generate a random key of a given length */
 string generateKey(int len){
     keyLength = len;
     string key = "";
@@ -136,21 +132,26 @@ string generateKey(int len){
     }
     return key;
 }
-int hashFunction(string masterKey, string key, int hashSize){
+
+/* hashFunction will take two keys and hash the two keys together within a given 
+size of the hash ranging from 0, n - 1 */
+int hashFunction(string masterKey, string key, int n){
     int result = 0;
     for(int i = 0; i < key.length(); i++){
         result += ((int)masterKey[i]) * ((int)key[i]);
     }
-    return result % hashSize;
+    return result % n;
 }
-void readData(){
-    ifstream fin("gibbon.txt");
+
+/* readData will read read in the name of a given text file */
+void readData(string text){
+    ifstream fin(text);
     istream& in = fin;
     string s;
     while (!in.eof()) {
         in >> s;
         s.erase(remove_if(s.begin(), s.end(), [](char c) { return !isalpha(c); } ), s.end());
-        //word.erase(std::remove_if(word.begin(), word.end(),(int(*)(int))std::isalnum), word.end());
+        /* word.erase(std::remove_if(word.begin(), word.end(),(int(*)(int))std::isalnum), word.end()); */
         data.push_back(s);
     }
     fin.close();

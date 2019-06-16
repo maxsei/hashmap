@@ -16,36 +16,46 @@ class Hashmap{
     
     public:
     
-    //constructors
+    /* Constructors */
     Hashmap();
     Hashmap(int cap);
-    //doers
-    void insert(std::string key, std::string data); //will not overwrite duplicates
-    void emplace(std::string key, std::string data); //will overwrite duplicates
-    void erase(std::string key); //removes object at key
+	/* destructor */
+	/* ~Hashmap(); */
+
+    /* Doers */
+	/* will not overwrite duplicates */
+    void Insert(std::string key, std::string value); 
+	/* /will overwrite duplicates */
+    void Emplace(std::string key, std::string value);
+	/* removes object at key */
+    void Erase(std::string key);
     
-    //getters
-    std::string at(std::string key); //returns data at key
-    node* find(std::string key); //returns pointer to where key is else returns pointer.end()
+    /* Getters */
+	/* returns data at key */
+    std::string At(std::string key);
     
-    int getBucketCount();
-    int getCapacity();
-    int getElementCount();
-    std::string getPublicKey();
+    int GetBucketCount();
+    int GetCapacity();
+    int GetElementCount();
     
     private:
     
-    int hashFunction(std::string key);   //runs key through hash to get array value
-    void generateKey(int len);      //used at start and when passed in keys exceed _key_length
+    std::string getPublicKey();
+	/* returns pointer to where key is else returns pointer.end() */
+    node* find(std::string key);
+
+	/* runs key through hash to get array value */
+    int hashFunction(std::string key);
+	/* called at initializtion and when passed in keys exceed _key_length */
+    void generateKey(int len);
     
     std::string _key = "";
     std::string _validKeyChars = "_1234567890qwertyuiopasdfghjklzxcvbnm";
     int _capac = 16;
     int _elements = 0;
-    int collisions = 0;
     
     node* _data[16] = {NULL};
-    
+    /* node* _data = new node[16]; */
 };
 
 #endif
